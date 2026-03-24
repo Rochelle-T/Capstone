@@ -1,0 +1,5 @@
+SIMPLE  =                    T / file does conform to FITS standard
+BITPIX  =                    8 / 8-bit bytes
+NAXIS   =                    0 / No image data is present
+EXTEND  =                    T / FITS file may contain extensions
+END

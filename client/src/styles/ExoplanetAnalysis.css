@@ -1,0 +1,435 @@
+/**
+ * ExoplanetAnalysis.css
+ * Styles for exoplanet detection and signal processing dashboard
+ */
+
+.exoplanet-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+  min-height: 100vh;
+  color: #e0e0e0;
+}
+
+.exoplanet-header {
+  text-align: center;
+  margin-bottom: 40px;
+  animation: fadeIn 0.6s ease;
+}
+
+.exoplanet-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, #00d9ff, #0099ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.exoplanet-header p {
+  font-size: 1.1rem;
+  color: #a0a0a0;
+  margin-bottom: 20px;
+}
+
+/* Target Selection Panel */
+.selection-panel {
+  background: rgba(20, 25, 50, 0.7);
+  border: 1px solid rgba(0, 217, 255, 0.2);
+  border-radius: 12px;
+  padding: 30px;
+  margin-bottom: 30px;
+  backdrop-filter: blur(10px);
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 20px;
+  align-items: flex-end;
+}
+
+.select-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.select-group label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #00d9ff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.target-select {
+  padding: 12px 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 217, 255, 0.3);
+  border-radius: 6px;
+  color: #e0e0e0;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.target-select:hover {
+  border-color: rgba(0, 217, 255, 0.6);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.target-select:focus {
+  outline: none;
+  border-color: #00d9ff;
+  box-shadow: 0 0 10px rgba(0, 217, 255, 0.2);
+}
+
+.run-button {
+  padding: 12px 30px;
+  background: linear-gradient(135deg, #0099ff, #00d9ff);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  height: fit-content;
+}
+
+.run-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 217, 255, 0.3);
+}
+
+.run-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Info Box */
+.info-box {
+  background: rgba(0, 217, 255, 0.05);
+  border: 1px solid rgba(0, 217, 255, 0.2);
+  border-radius: 8px;
+  padding: 25px;
+  margin-top: 30px;
+}
+
+.info-box h3 {
+  color: #00d9ff;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+.info-box ol {
+  list-style: decimal;
+  padding-left: 20px;
+  line-height: 1.8;
+}
+
+.info-box li {
+  margin-bottom: 10px;
+  color: #c0c0c0;
+}
+
+.warning-note {
+  background: rgba(245, 158, 11, 0.1);
+  border-left: 3px solid #fbbf24;
+  padding: 12px;
+  border-radius: 4px;
+  margin-top: 15px;
+  color: #fcd34d;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Loading Panel */
+.loading-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 600px;
+  gap: 30px;
+}
+
+.spinner {
+  width: 60px;
+  height: 60px;
+  border: 3px solid rgba(0, 217, 255, 0.2);
+  border-top-color: #00d9ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-panel h2 {
+  font-size: 1.8rem;
+  color: #00d9ff;
+}
+
+.loading-panel p {
+  color: #a0a0a0;
+  font-size: 1.1rem;
+}
+
+.loading-note {
+  color: #fbbf24 !important;
+  font-size: 0.95rem;
+  margin-top: 20px;
+  padding: 10px;
+  background: rgba(245, 158, 11, 0.1);
+  border-radius: 4px;
+}
+
+.progress-steps {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.step {
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 217, 255, 0.2);
+  border-radius: 6px;
+  color: #a0a0a0;
+  transition: all 0.3s ease;
+}
+
+.step.active {
+  background: rgba(0, 217, 255, 0.2);
+  border-color: #00d9ff;
+  color: #00d9ff;
+}
+
+/* Results Section */
+.summary-section {
+  margin-bottom: 40px;
+}
+
+.summary-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 25px;
+  color: #00d9ff;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.metric-card {
+  background: rgba(0, 217, 255, 0.05);
+  border: 1px solid rgba(0, 217, 255, 0.2);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+  border-color: rgba(0, 217, 255, 0.6);
+  box-shadow: 0 5px 15px rgba(0, 217, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.metric-label {
+  font-size: 0.85rem;
+  color: #a0a0a0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.metric-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #00d9ff;
+  margin-bottom: 5px;
+  font-family: 'Courier New', monospace;
+}
+
+.metric-unit {
+  font-size: 0.9rem;
+  color: #606080;
+}
+
+/* Plots Section */
+.plots-section {
+  margin-bottom: 40px;
+}
+
+.plots-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 25px;
+  color: #00d9ff;
+}
+
+.plots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: 25px;
+}
+
+.plot-card {
+  background: rgba(20, 25, 50, 0.5);
+  border: 1px solid rgba(0, 217, 255, 0.2);
+  border-radius: 8px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.plot-card:hover {
+  border-color: rgba(0, 217, 255, 0.6);
+  box-shadow: 0 10px 30px rgba(0, 217, 255, 0.1);
+}
+
+.plot-card h3 {
+  color: #00d9ff;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+}
+
+.plot-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.plot-desc {
+  font-size: 0.9rem;
+  color: #a0a0a0;
+  line-height: 1.5;
+}
+
+/* Error Banner */
+.error-banner {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+  padding: 15px 20px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.error-content {
+  display: flex;
+  gap: 12px;
+  flex: 1;
+}
+
+.error-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.error-message {
+  flex: 1;
+}
+
+.error-message strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #ff7b7b;
+}
+
+.error-message p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.close-error {
+  background: none;
+  border: none;
+  color: #fca5a5;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.close-error:hover {
+  opacity: 1;
+}
+
+/* Back Button */
+.back-button {
+  padding: 10px 20px;
+  background: rgba(0, 217, 255, 0.1);
+  border: 1px solid rgba(0, 217, 255, 0.3);
+  color: #00d9ff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  margin-top: 15px;
+}
+
+.back-button:hover {
+  background: rgba(0, 217, 255, 0.2);
+  border-color: #00d9ff;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .plots-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .selection-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .exoplanet-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .exoplanet-container {
+    padding: 15px;
+  }
+
+  .exoplanet-header h1 {
+    font-size: 1.4rem;
+  }
+
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .selection-panel {
+    padding: 20px;
+  }
+}
