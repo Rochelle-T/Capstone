@@ -122,6 +122,7 @@ const Dashboard = () => {
         <div className="nav-right">
           <span className="user-email">{user?.email}</span>
           <button onClick={() => navigate('/exoplanet')} className="btn-nav">🔭 Analyze</button>
+          <a href="http://localhost:8501/" target="_blank" rel="noopener noreferrer" className="btn-nav">⭐ Test for a Star</a>
           <button onClick={handleLogout} className="btn-logout">Sign Out</button>
         </div>
       </nav>
