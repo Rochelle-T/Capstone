@@ -14,9 +14,29 @@ export const AuthProvider = ({ children }) => {
     const storedUser = localStorage.getItem('user');
     
     if (token && storedUser) {
-      setUser(JSON.parse(storedUser));
+      authService.getCurrentUser()
+        .then((userInfo) => {
+          localStorage.setItem('user', JSON.stringify(userInfo));
+          setUser(userInfo);
+        })
+        .catch(() => {
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('user');
+          setUser(null);
+        })
+        .finally(() => setLoading(false));
+      return;
     }
     setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    const handleAuthExpired = () => {
+      setUser(null);
+      setError('Your session expired. Please sign in again.');
+    };
+    window.addEventListener('auth-expired', handleAuthExpired);
+    return () => window.removeEventListener('auth-expired', handleAuthExpired);
   }, []);
 
   const register = async (email, password, username) => {
@@ -38,19 +58,46 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const setAuthenticatedUser = async (response) => {
+    localStorage.setItem('access_token', response.access_token);
+    const userInfo = await authService.getCurrentUser();
+    localStorage.setItem('user', JSON.stringify(userInfo));
+    setUser(userInfo);
+    return response;
+  };
+
   const login = async (email, password) => {
     try {
       setError(null);
       const response = await authService.login(email, password);
-      localStorage.setItem('access_token', response.access_token);
-      
-      // Fetch user details
-      const userInfo = await authService.getCurrentUser();
-      localStorage.setItem('user', JSON.stringify(userInfo));
-      setUser(userInfo);
-      return response;
+      return await setAuthenticatedUser(response);
     } catch (err) {
       const message = err.response?.data?.detail || 'Login failed';
+      setError(message);
+      throw new Error(message);
+    }
+  };
+
+  const loginAsDemo = async () => {
+    const demoEmail = 'demo@astrosense.example.com';
+    const demoPassword = 'AstroSenseDemo123!';
+
+    try {
+      setError(null);
+      let response;
+
+      try {
+        response = await authService.login(demoEmail, demoPassword);
+      } catch (err) {
+        if (err.response?.status !== 401) {
+          throw err;
+        }
+        response = await authService.register(demoEmail, demoPassword, 'Demo User');
+      }
+
+      return await setAuthenticatedUser(response);
+    } catch (err) {
+      const message = err.response?.data?.detail || 'Demo login failed';
       setError(message);
       throw new Error(message);
     }
@@ -64,7 +111,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, error, register, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, error, register, login, loginAsDemo, logout }}>
       {children}
     </AuthContext.Provider>
   );

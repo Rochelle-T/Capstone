@@ -5,6 +5,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import ExoplanetAnalysis from './pages/ExoplanetAnalysis';
+import Home from './pages/Home';
+import WorkspacePage from './pages/WorkspacePage';
 import './styles/Global.css';
 
 const ProtectedRoute = ({ children }) => {
@@ -52,7 +54,23 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/" element={<Navigate to="/dashboard" />} />
+          <Route
+            path="/results"
+            element={
+              <ProtectedRoute>
+                <WorkspacePage type="results" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <WorkspacePage type="settings" />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/" element={<Home />} />
         </Routes>
       </AuthProvider>
     </Router>

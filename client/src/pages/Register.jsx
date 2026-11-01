@@ -44,11 +44,11 @@ const Register = () => {
       <div className="stars"></div>
       <div className="auth-box">
         <div className="auth-header">
-          <div className="logo">
-            <span className="rocket-icon">🚀</span>
+          <Link to="/" className="logo">
+            <span className="brand-mark">AS</span>
             <h1>AstroSense</h1>
             <p className="tagline">Exoplanet Detection Platform</p>
-          </div>
+          </Link>
         </div>
 
         <form onSubmit={handleSubmit} className="auth-form">

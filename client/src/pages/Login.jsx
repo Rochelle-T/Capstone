@@ -8,7 +8,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useContext(AuthContext);
+  const { login, loginAsDemo } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -26,16 +26,30 @@ const Login = () => {
     }
   };
 
+  const handleDemoLogin = async () => {
+    setError('');
+    setLoading(true);
+
+    try {
+      await loginAsDemo();
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="auth-container">
       <div className="stars"></div>
       <div className="auth-box">
         <div className="auth-header">
-          <div className="logo">
-            <span className="rocket-icon">🚀</span>
+          <Link to="/" className="logo">
+            <span className="brand-mark">AS</span>
             <h1>AstroSense</h1>
             <p className="tagline">Exoplanet Detection Platform</p>
-          </div>
+          </Link>
         </div>
 
         <form onSubmit={handleSubmit} className="auth-form">
@@ -68,10 +82,20 @@ const Login = () => {
           <button type="submit" disabled={loading} className="btn-primary">
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
+
+          <button
+            type="button"
+            disabled={loading}
+            className="btn-demo"
+            onClick={handleDemoLogin}
+          >
+            Continue as Demo User
+          </button>
         </form>
 
         <div className="auth-footer">
           <p>Don't have an account? <Link to="/register">Sign up</Link></p>
+          <small>Temporary demo access for development</small>
         </div>
       </div>
     </div>

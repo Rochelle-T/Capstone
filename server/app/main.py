@@ -11,7 +11,7 @@ Key features:
 Storage: HuggingFace Spaces session storage (temporary, per-session)
 """
 
-from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File, Header
+from fastapi import FastAPI, Depends, HTTPException, status, Header
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import timedelta
 import uuid
@@ -19,10 +19,10 @@ from typing import Optional
 
 from app.config import settings
 from app.auth import create_access_token, decode_token, hash_password, verify_password
-from app.models import UserRegister, UserLogin, TokenResponse, UserFile, FileUploadResponse
-from app.storage import upload_fits_file, list_user_files, delete_user_file
+from app.models import UserRegister, UserLogin, TokenResponse
 from app.persistence import add_user, get_user, user_exists, get_users_db
 from app.exoplanet_analysis import pipeline
+from services.inference_service import get_job, get_model_status, submit_kic, warm_model
 
 # Initialize app
 app = FastAPI(
@@ -30,6 +30,11 @@ app = FastAPI(
     description="Exoplanet Detection Platform with FITS File Upload",
     version="1.0.0"
 )
+
+
+@app.on_event("startup")
+async def warm_inference_model():
+    warm_model()
 
 # CORS middleware
 app.add_middleware(
@@ -191,50 +196,34 @@ async def get_current_user_info(user_id: str = Depends(get_current_user)):
     }
 
 
-# ============== [PER-USER STORAGE]: FILE UPLOAD ROUTES ==============
-
-@app.post("/api/upload/fits", response_model=FileUploadResponse)
-async def upload_fits(
-    file: UploadFile = File(...),
-    user_id: str = Depends(get_current_user)
-):
-    """
-    [JWT AUTHENTICATION]: Upload a FITS file (requires valid JWT token).
-    [PER-USER STORAGE]: File stored in user's isolated session storage directory.
-    [ASTRONOMY PROCESSING PLACEHOLDER]: Uploaded file can be accessed by astronomy processing pipeline later.
-    
-    - Validates FITS file format (.fits, .fit, .fts)
-    - Checks file size (max 500MB)
-    - Stores in SESSION_STORAGE_BASE/{user_id}/ with timestamp
-    """
-    result = await upload_fits_file(user_id, file)
-    return result
-
-
-@app.get("/api/files/list")
-async def list_files(user_id: str = Depends(get_current_user)):
-    """
-    [JWT AUTHENTICATION]: List all files for current user (requires valid JWT token).
-    [PER-USER STORAGE]: Only returns files from user's isolated directory.
-    """
-    files = await list_user_files(user_id)
-    return {"files": files, "count": len(files)}
-
-
-@app.delete("/api/files/{filename}")
-async def delete_file(
-    filename: str,
-    user_id: str = Depends(get_current_user)
-):
-    """
-    [JWT AUTHENTICATION]: Delete a file (requires valid JWT token).
-    [PER-USER STORAGE]: Only allows deletion of files from user's isolated directory.
-    """
-    result = await delete_user_file(user_id, filename)
-    return result
-
-
 # ============== [ASTRONOMY PROCESSING]: EXOPLANET ANALYSIS ROUTES ==============
+
+@app.post("/api/analyze")
+async def analyze_kic(request: dict, user_id: str = Depends(get_current_user)):
+    """Queue model inference for a user-provided KIC identifier."""
+    kic = request.get("kic")
+    if not kic:
+        raise HTTPException(status_code=400, detail="Enter a KIC number to begin analysis.")
+    try:
+        job_id = submit_kic(str(kic))
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"job_id": job_id, "status": "queued"}
+
+
+@app.get("/api/jobs/{job_id}")
+async def analysis_job(job_id: str, user_id: str = Depends(get_current_user)):
+    """Return queued KIC inference status and, when complete, its result."""
+    job = get_job(job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Analysis job not found.")
+    return job
+
+
+@app.get("/api/model/status")
+async def model_status(user_id: str = Depends(get_current_user)):
+    """Return whether the configured inference model loaded at startup."""
+    return get_model_status()
 
 @app.get("/api/exoplanet/targets")
 async def get_exoplanet_targets():

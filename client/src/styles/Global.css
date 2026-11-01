@@ -1,16 +1,17 @@
-/* Global Styles - Space Theme */
+/* AstroSense Mission Control design tokens */
 :root {
-  --primary-cyan: #00d9ff;
-  --primary-purple: #7c3aed;
-  --dark-bg: #0a0e27;
-  --darker-bg: #050710;
-  --card-bg: rgba(15, 23, 42, 0.8);
-  --border-color: rgba(0, 217, 255, 0.2);
-  --text-primary: #ffffff;
-  --text-secondary: #a0aec0;
-  --success: #10b981;
-  --error: #ef4444;
-  --warning: #f59e0b;
+  --primary-cyan: #38bdf8;
+  --primary-purple: #8b5cf6;
+  --dark-bg: #07111f;
+  --darker-bg: #050b14;
+  --panel-bg: #0e1b2d;
+  --card-bg: rgba(14, 27, 45, 0.92);
+  --border-color: rgba(148, 163, 184, 0.18);
+  --text-primary: #e5f0ff;
+  --text-secondary: #94a3b8;
+  --success: #34d399;
+  --error: #f87171;
+  --warning: #fbbf24;
 }
 
 * {
@@ -25,7 +26,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, var(--dark-bg) 0%, var(--darker-bg) 100%);
+  background: var(--dark-bg);
   color: var(--text-primary);
   overflow-x: hidden;
 }
@@ -92,7 +93,7 @@ body {
   background-repeat: repeat;
   background-size: 200px 200px;
   pointer-events: none;
-  opacity: 0.5;
+  opacity: 0.12;
   z-index: 1;
 }
 
@@ -103,18 +104,18 @@ body {
   font-size: 16px;
   font-weight: 600;
   color: var(--darker-bg);
-  background: linear-gradient(135deg, var(--primary-cyan), #00b8cc);
+  background: var(--primary-cyan);
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
-  text-transform: uppercase;
+  text-transform: none;
   letter-spacing: 1px;
 }
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(0, 217, 255, 0.3);
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.28);
 }
 
 .btn-primary:disabled {
@@ -266,4 +267,47 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 217, 255, 0.5);
+}
+
+/* Keep all surfaces within the Mission Control palette. */
+button,
+input,
+select {
+  font-family: inherit;
+}
+
+.btn-select,
+.btn-nav {
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: var(--primary-cyan);
+  border-radius: 6px;
+}
+
+.btn-select:hover,
+.btn-nav:hover {
+  background: rgba(56, 189, 248, 0.16);
+  border-color: var(--primary-cyan);
+  box-shadow: none;
+}
+
+.btn-delete,
+.btn-logout {
+  background: transparent;
+  border: 1px solid rgba(248, 113, 113, 0.55);
+  color: var(--error);
+  border-radius: 6px;
+}
+
+.message,
+.error-message {
+  background: rgba(248, 113, 113, 0.08);
+  border-color: rgba(248, 113, 113, 0.35);
+  color: #fecaca;
+}
+
+.message.success {
+  background: rgba(52, 211, 153, 0.08);
+  border-color: rgba(52, 211, 153, 0.35);
+  color: var(--success);
 }

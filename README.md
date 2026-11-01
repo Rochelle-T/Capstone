@@ -5,8 +5,7 @@
 AstroSense is a modern web application for exoplanet detection and astronomical data analysis. It features:
 
 - **JWT Authentication**: Secure user registration and login
-- **Per-User File Storage**: Each user's FITS files are stored separately in Firebase Cloud Storage
-- **FITS File Upload**: Upload and manage astronomical dataset files
+- **KIC-Based Inference**: Retrieve Kepler light curves by KIC and score transit windows with the trained CNN
 - **Space-Themed UI**: Modern, responsive interface inspired by astronomical themes
 - **Real-time File Management**: List, upload, and delete FITS files
 
@@ -45,12 +44,11 @@ AstroSense/
 - Token-based API authentication
 - 30-minute token expiration (configurable)
 
-### File Management
-- Upload FITS astronomical files (max 500MB)
-- Automatic per-user directory isolation
-- File listing with metadata
-- File deletion with confirmation
-- Drag-and-drop upload support
+### KIC Analysis
+- Enter a Kepler Input Catalog (KIC) identifier
+- Retrieve long-cadence data from MAST
+- Preprocess it with the training-compatible pipeline
+- Run the CNN in a background job and review the stitched light curve
 
 ### Frontend
 - Modern dark space theme
@@ -158,16 +156,9 @@ AstroSense/
 
 - **GET** `/api/auth/me` - Get current user info (requires auth)
 
-### File Management
-
-- **POST** `/api/upload/fits` - Upload FITS file (requires auth)
-  - Multipart form data with `file` field
-  - Supported extensions: `.fits`, `.fit`, `.fts`
-  - Max size: 500MB
-
-- **GET** `/api/files/list` - List user's files (requires auth)
-
-- **DELETE** `/api/files/{filename}` - Delete specific file (requires auth)
+- **POST** `/api/analyze` - Queue KIC model inference (requires auth)
+- **GET** `/api/jobs/{job_id}` - Poll an inference job (requires auth)
+- **GET** `/api/model/status` - Confirm the model loaded at startup (requires auth)
 
 - **GET** `/api/health` - Health check
 
@@ -212,6 +203,12 @@ astrosense-uploads/
 ### CORS Errors
 - Ensure frontend URL is in `settings.ALLOWED_ORIGINS` in `server/app/config.py`
 - Check that both frontend and backend are running
+
+### Confirm model integration
+
+When the backend starts, the log should contain `Application startup complete` after TensorFlow loads. After signing in, open the dashboard and check the **MODEL STATUS** card. It should show `Loaded`.
+
+You can also open `http://localhost:8000/docs`, authorize with a bearer token, and call `GET /api/model/status`. A successful response contains `"available": true`. To test the complete path, submit KIC `9850966` from **Analysis** and poll the job until its status is `done`.
 
 ### Firebase Connection Issues
 - Verify `firebase_credentials.json` exists and is valid

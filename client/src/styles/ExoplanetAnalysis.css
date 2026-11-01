@@ -433,3 +433,336 @@
     padding: 20px;
   }
 }
+
+/* Mission Control visual language */
+.exoplanet-container {
+  max-width: none;
+  padding: 42px 48px;
+  background: var(--dark-bg);
+}
+
+.exoplanet-header {
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 28px;
+}
+
+.exoplanet-header h1,
+.summary-section h2,
+.plots-section h2 {
+  color: var(--text-primary);
+  background: none;
+  -webkit-text-fill-color: initial;
+}
+
+.selection-panel,
+.info-box,
+.metric-card,
+.plot-card {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+  backdrop-filter: none;
+  border-radius: 8px;
+}
+
+.target-select {
+  background: var(--dark-bg);
+  border-color: var(--border-color);
+}
+
+.run-button {
+  background: var(--primary-cyan);
+  color: var(--dark-bg);
+  border-radius: 6px;
+}
+
+.step.active {
+  background: rgba(56, 189, 248, 0.1);
+  border-color: var(--primary-cyan);
+  color: var(--primary-cyan);
+}
+
+.metric-value,
+.plot-card h3,
+.info-box h3 {
+  color: var(--primary-cyan);
+}
+
+.exoplanet-header h1,
+.summary-section h2,
+.plots-section h2 {
+  font-weight: 600;
+}
+
+.error-icon {
+  color: var(--error);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.close-error {
+  color: var(--text-secondary);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.warning-note {
+  color: var(--warning);
+}
+
+.analysis-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.analysis-brand,
+.analysis-back {
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.analysis-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 650;
+}
+
+.analysis-brand span {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  color: var(--primary-cyan);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  border-radius: 5px;
+  font-size: 10px;
+}
+
+.analysis-back {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.kic-form,
+.job-panel,
+.light-curve-card,
+.top-window {
+  padding: 24px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+
+.kic-form {
+  margin-bottom: 24px;
+}
+
+.kic-form label {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.kic-input-row {
+  display: flex;
+  gap: 12px;
+}
+
+.kic-input-row input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px;
+  color: var(--text-primary);
+  background: var(--dark-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-family: var(--mono);
+  font-size: 15px;
+}
+
+.kic-input-row input:focus {
+  outline: 2px solid rgba(56, 189, 248, 0.35);
+  border-color: var(--primary-cyan);
+}
+
+.kic-form small,
+.job-panel p,
+.metric-unit {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.job-panel {
+  margin-top: 24px;
+}
+
+.job-panel h2 {
+  margin: 10px 0 22px;
+  color: var(--text-primary);
+}
+
+.job-progress {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.job-stage {
+  padding: 12px;
+  color: var(--text-secondary);
+  background: var(--dark-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.job-stage span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+}
+
+.job-stage.active {
+  color: var(--primary-cyan);
+  border-color: rgba(56, 189, 248, 0.5);
+}
+
+.job-stage.active span {
+  color: var(--primary-cyan);
+}
+
+.analysis-results {
+  margin-top: 24px;
+}
+
+.result-heading,
+.plot-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 20px;
+  margin-bottom: 22px;
+}
+
+.result-heading h2,
+.plot-heading h3 {
+  margin: 10px 0 0;
+  color: var(--text-primary);
+}
+
+.plot-meta {
+  color: var(--text-secondary);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.light-curve-card {
+  margin-top: 24px;
+}
+
+.light-curve {
+  width: 100%;
+  height: auto;
+  margin-top: 14px;
+  background: rgba(7, 17, 31, 0.7);
+}
+
+.light-curve line {
+  stroke: rgba(148, 163, 184, 0.2);
+}
+
+.light-curve polyline {
+  fill: none;
+  stroke: var(--primary-cyan);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.top-window {
+  margin-top: 16px;
+}
+
+.top-window p {
+  margin: 12px 0 4px;
+  color: var(--text-primary);
+  font-family: var(--mono);
+}
+
+.top-window strong {
+  color: var(--success);
+  font-family: var(--mono);
+}
+
+@media (max-width: 600px) {
+  .kic-input-row,
+  .result-heading,
+  .plot-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .kic-input-row .run-button {
+    width: 100%;
+  }
+
+  .job-progress {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 800px) {
+  .exoplanet-container {
+    padding: 28px 20px;
+  }
+
+  .exoplanet-header {
+    margin-bottom: 28px;
+  }
+
+  .exoplanet-header h1 {
+    font-size: clamp(1.8rem, 8vw, 2.5rem);
+    line-height: 1.1;
+  }
+
+  .selection-panel {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+
+  .run-button {
+    width: 100%;
+  }
+
+  .plots-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .plot-card {
+    min-width: 0;
+  }
+
+  .plot-card img {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .progress-steps {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}

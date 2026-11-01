@@ -18,6 +18,18 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 && localStorage.getItem('access_token')) {
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('user');
+      window.dispatchEvent(new Event('auth-expired'));
+    }
+    return Promise.reject(error);
+  },
+);
+
 export const authService = {
   register: async (email, password, username) => {
     const response = await apiClient.post('/auth/register', {
@@ -42,26 +54,19 @@ export const authService = {
   },
 };
 
-export const fileService = {
-  uploadFits: async (file) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    
-    const response = await apiClient.post('/upload/fits', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+export const inferenceService = {
+  submit: async (kic) => {
+    const response = await apiClient.post('/analyze', { kic });
     return response.data;
   },
 
-  listFiles: async () => {
-    const response = await apiClient.get('/files/list');
+  getJob: async (jobId) => {
+    const response = await apiClient.get(`/jobs/${jobId}`);
     return response.data;
   },
 
-  deleteFile: async (filename) => {
-    const response = await apiClient.delete(`/files/${filename}`);
+  getModelStatus: async () => {
+    const response = await apiClient.get('/model/status');
     return response.data;
   },
 };
