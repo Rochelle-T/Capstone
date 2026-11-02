@@ -54,6 +54,16 @@ Server will run at: http://localhost:8000
 - `GET /api/files/list` - List user's files
 - `DELETE /api/files/{filename}` - Delete file
 
+### KIC model inference
+
+`POST /api/analyze` runs both configured models for one KIC identifier. The
+Stage 1 TensorFlow model uses its existing preprocessing, while the PyTorch
+AttentionMIL model uses the Savitzky-Golay/gap-2.5 pipeline from
+`kepler_pipeline 2.py`. FITS files are cached and reused; the second pipeline
+also retrieves short-cadence files required by its training configuration.
+Results are returned independently under `result.models.stage_1_cnn` and
+`result.models.attention_mil`.
+
 ## Storage
 
 ### Session Storage Structure

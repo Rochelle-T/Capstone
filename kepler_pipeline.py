@@ -584,6 +584,7 @@ def predict_kic(kic_input, model_path, cfg: PipelineConfig = PipelineConfig(),
             "total_seconds": float(time.time() - started_at),
         },
         "diagnostics": prep.diagnostics,
+        "_fits_files": prep.fits_files,
         "stitched": {
             "time": prep.stitched["time"].tolist(),
             "flux": prep.stitched["flux"].tolist(),

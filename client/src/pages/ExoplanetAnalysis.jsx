@@ -104,6 +104,129 @@ function Section({ title, eyebrow, children, open = false }) {
   );
 }
 
+function ModelTwoAttentionChart({ model }) {
+  const values = model?.attention_weights || [];
+  if (!values.length) return <p className="empty-state">Attention weights are unavailable.</p>;
+  const width = 1000;
+  const height = 260;
+  const max = Math.max(...values, 0.0001);
+  const barWidth = Math.max(2, (width - 70) / values.length - 2);
+  return (
+    <div className="chart-shell">
+      <svg className="analysis-plot" viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Model 2 attention by window">
+        <line className="chart-axis" x1="45" y1="220" x2="980" y2="220" />
+        {values.map((value, index) => {
+          const barHeight = (value / max) * 175;
+          return <g key={`attention-${index}`}><title>{`Window ${index + 1}: attention ${value.toFixed(5)}`}</title><rect className="attention-bar" x={50 + index * ((width - 70) / values.length)} y={215 - barHeight} width={barWidth} height={barHeight} /></g>;
+        })}
+        <text className="chart-label" x="500" y="250" textAnchor="middle">Chronological window index</text>
+        <text className="chart-label" transform="translate(14 130) rotate(-90)" textAnchor="middle">Attention weight</text>
+      </svg>
+    </div>
+  );
+}
+
+function ModelTwoPreprocessingChart({ model }) {
+  const files = model?.preprocessing || [];
+  const points = files.flatMap((file) => file.time.map((time, index) => ({ time, value: file.processed[index] })));
+  if (!points.length) return <p className="empty-state">Model 2 preprocessing data is unavailable.</p>;
+  const width = 1000;
+  const height = 280;
+  const minTime = points[0].time;
+  const maxTime = points[points.length - 1].time || minTime + 1;
+  const values = points.map((point) => point.value).filter(Number.isFinite);
+  const minValue = Math.min(...values);
+  const maxValue = Math.max(...values);
+  const x = (value) => 45 + ((value - minTime) / (maxTime - minTime || 1)) * 930;
+  const y = (value) => 20 + ((maxValue - value) / (maxValue - minValue || 1)) * 200;
+  const path = points.map((point, index) => `${index ? 'L' : 'M'}${x(point.time).toFixed(2)},${y(point.value).toFixed(2)}`).join(' ');
+  return <div className="chart-shell"><svg className="analysis-plot" viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Model 2 processed light curve"><line className="chart-axis" x1="45" y1="225" x2="975" y2="225" /><path className="light-curve-path" d={path} /><text className="chart-label" x="500" y="265" textAnchor="middle">Time</text><text className="chart-label" transform="translate(14 130) rotate(-90)" textAnchor="middle">Savgol processed flux</text></svg></div>;
+}
+
+function ModelTwoAttentionSegments({ model }) {
+  const values = model?.attention_weights || [];
+  const specs = model?.window_specs || [];
+  const bySegment = {};
+  values.forEach((value, index) => {
+    const file = specs[index]?.file || 'Unknown';
+    bySegment[file] = (bySegment[file] || 0) + value;
+  });
+  const entries = Object.entries(bySegment);
+  if (!entries.length) return <p className="empty-state">Segment attention is unavailable.</p>;
+  const max = Math.max(...entries.map(([, value]) => value), 0.0001);
+  return <div className="model2-segment-bars">{entries.map(([file, value]) => <div className="model2-segment-row" key={file}><span className="model2-segment-name" title={file}>{file}</span><span className="segment-bar-track"><i style={{ width: `${(value / max) * 100}%` }} /></span><strong>{formatNumber(value, 4)}</strong></div>)}</div>;
+}
+
+function ModelTwoAttentionDistribution({ model }) {
+  const values = model?.attention_weights || [];
+  if (!values.length) return <p className="empty-state">Attention distribution is unavailable.</p>;
+  const bins = Array.from({ length: 10 }, () => 0);
+  const max = Math.max(...values, 0.0001);
+  values.forEach((value) => { bins[Math.min(9, Math.floor((value / max) * 10))] += 1; });
+  const peak = Math.max(...bins, 1);
+  return <div className="distribution-grid">{bins.map((count, index) => <div className="distribution-bar" key={`attention-bin-${index}`} style={{ height: `${Math.max(4, (count / peak) * 100)}%` }} title={`${count} windows`}><span>{count}</span></div>)}</div>;
+}
+
+function ModelTwoDetails({ result }) {
+  const model = result?.models?.attention_mil;
+  if (!model) return <p className="empty-state">Model 2 results are unavailable.</p>;
+  return (
+    <div className="model-tab-panel">
+      <div className="prediction-callout">
+        <div><span className="eyebrow">PREDICTION SUMMARY</span><h3>{model.is_candidate ? 'Candidate detected' : 'No candidate detected'}</h3><p>AttentionMIL uses its validation threshold against the KIC-level probability.</p></div>
+        <strong className="verdict-badge">{model.is_candidate ? 'CANDIDATE' : 'NO CANDIDATE'}</strong>
+      </div>
+      <div className="metrics-grid">
+        <Metric label="KIC probability" value={formatProbability(model.probability)} unit="target-level score" />
+        <Metric label="Decision threshold" value={formatProbability(model.threshold)} unit="validation threshold" />
+        <Metric label="Windows evaluated" value={model.n_windows} unit={`${model.n_windows_before_cap ?? 'Unavailable'} before cap`} />
+        <Metric label="Files used" value={model.n_files_used} unit={`${result.n_fits_files ?? 'Unavailable'} retrieved`} />
+      </div>
+      <Section title="AttentionMIL model details" eyebrow="SECTION A" open>
+        <div className="detail-grid">
+          <div><span>Architecture</span><strong>{model.name}</strong></div>
+          <div><span>Model version</span><strong>{model.version}</strong></div>
+          <div><span>Framework</span><strong>{model.loading}</strong></div>
+          <div><span>Preprocessing</span><strong>Savitzky-Golay · gap factor 2.5</strong></div>
+          <div><span>Input</span><strong className="mono">Bag of 1024-point windows</strong></div>
+          <div><span>Attention windows</span><strong>{model.n_windows}</strong></div>
+        </div>
+      </Section>
+      <Section title="Top attention windows" eyebrow="SECTION B" open>
+        {model.top_windows?.length ? (
+          <div className="window-table-wrap"><table className="segment-table"><thead><tr><th>Rank</th><th>Source FITS</th><th>Start</th><th>Time range</th><th>Attention</th></tr></thead><tbody>
+            {model.top_windows.map((window, index) => <tr key={`${window.file}-${window.start}`}><td>#{index + 1}</td><td>{window.file}</td><td>{window.start}</td><td>{formatNumber(window.time_start, 4)} – {formatNumber(window.time_end, 4)}</td><td>{formatNumber(window.attention, 4)}</td></tr>)}
+          </tbody></table></div>
+        ) : <p className="empty-state">Attention windows are unavailable.</p>}
+      </Section>
+      <Section title="Attention timeline" eyebrow="SECTION C" open>
+        <ModelTwoAttentionChart model={model} />
+        <p className="technical-note">Higher bars indicate windows that contributed more strongly to the KIC-level decision. They are not independent probabilities.</p>
+      </Section>
+      <Section title="Model 2 preprocessing" eyebrow="SECTION D">
+        <ModelTwoPreprocessingChart model={model} />
+        <p className="technical-note">This signal is the Savitzky-Golay processed flux supplied to the AttentionMIL window pipeline.</p>
+      </Section>
+      <Section title="Attention by FITS segment" eyebrow="SECTION E">
+        <ModelTwoAttentionSegments model={model} />
+      </Section>
+      <Section title="Attention distribution" eyebrow="SECTION F">
+        <ModelTwoAttentionDistribution model={model} />
+      </Section>
+      <Section title="Data processing" eyebrow="SECTION G">
+        <div className="detail-grid">
+          <div><span>FITS files retrieved</span><strong>{result.n_fits_files}</strong></div>
+          <div><span>Files used by Model 2</span><strong>{model.n_files_used}</strong></div>
+          <div><span>Windows before cap</span><strong>{model.n_windows_before_cap}</strong></div>
+          <div><span>Windows after cap</span><strong>{model.n_windows}</strong></div>
+          <div><span>Skipped files</span><strong>{result.skipped_files?.length ?? 0}</strong></div>
+          <div><span>Model execution</span><strong>PyTorch inference</strong></div>
+        </div>
+      </Section>
+    </div>
+  );
+}
+
 function LightCurveChart({ result, stage, selectedWindow, selectedRegion, selectedSegment, zoom = 1 }) {
   const series = getStageSeries(result, stage);
   const segments = result?.diagnostics?.segments || [];
@@ -487,6 +610,7 @@ export default function ExoplanetAnalysis() {
   const [zoom, setZoom] = useState(1);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [activeModel, setActiveModel] = useState('model1');
 
   useEffect(() => {
     if (!job || ['done', 'error'].includes(job.status)) return undefined;
@@ -601,6 +725,13 @@ export default function ExoplanetAnalysis() {
               </div>
             </div>
 
+            <div className="model-tabs" role="tablist" aria-label="Model results">
+              <button type="button" className={activeModel === 'model1' ? 'model-tab active' : 'model-tab'} onClick={() => setActiveModel('model1')} role="tab" aria-selected={activeModel === 'model1'}>Model 1 · Stage 1 CNN</button>
+              <button type="button" className={activeModel === 'model2' ? 'model-tab active' : 'model-tab'} onClick={() => setActiveModel('model2')} role="tab" aria-selected={activeModel === 'model2'} disabled={!result.models?.attention_mil}>Model 2 · AttentionMIL</button>
+            </div>
+
+            {activeModel === 'model1' ? (
+            <div className="model-tab-panel">
             <div className="prediction-callout">
               <div><span className="eyebrow">PREDICTION SUMMARY</span><h3>{result.pred_max ? 'Candidate window detected' : 'No candidate window above threshold'}</h3><p>Classification uses the maximum window score and the actual {result.threshold ?? 0.5} decision threshold.</p></div>
               <strong className="verdict-badge">{result.pred_max ? 'CANDIDATE' : 'NO CANDIDATE'}</strong>
@@ -613,6 +744,23 @@ export default function ExoplanetAnalysis() {
               <Metric label="Decision threshold" value={formatProbability(result.threshold)} unit="maximum-score rule" />
               <Metric label="Windows evaluated" value={result.n_windows} unit={`${result.windows_above_threshold ?? 0} above threshold (${result.n_windows ? ((result.windows_above_threshold / result.n_windows) * 100).toFixed(1) : '0.0'}%)`} />
             </div>
+
+            {result.models?.attention_mil && (
+              <div className="prediction-callout">
+                <div>
+                  <span className="eyebrow">SECOND MODEL</span>
+                  <h3>AttentionMIL CNN</h3>
+                  <p>
+                    Model 2 probability: {formatProbability(result.models.attention_mil.probability)}
+                    {' · '}
+                    threshold: {formatProbability(result.models.attention_mil.threshold)}
+                  </p>
+                </div>
+                <strong className="verdict-badge">
+                  {result.models.attention_mil.is_candidate ? 'CANDIDATE' : 'NO CANDIDATE'}
+                </strong>
+              </div>
+            )}
 
             <Section title="Target overview" eyebrow="SECTION A" open>
               <div className="detail-grid">
@@ -702,6 +850,10 @@ export default function ExoplanetAnalysis() {
               <div className="table-actions"><button type="button" className="back-button" onClick={() => downloadWindowCsv(result)}>Download window CSV</button></div>
               <div className="window-table-wrap"><table className="segment-table"><thead><tr><th>Window</th><th>Probability</th><th>Threshold</th><th>Segment</th><th>Start</th><th>End</th></tr></thead><tbody>{visibleWindowIndices.map((index) => { const probability = result.window_probabilities[index]; const meta = result.window_meta?.[index] || {}; return <tr className={index === selectedWindowIndex ? 'selected-row' : ''} key={`window-row-${index}`} onClick={() => setSelectedWindowIndex(index)}><td>#{index + 1}</td><td>{formatProbability(probability)}</td><td>{probability >= (result.threshold ?? 0.5) ? 'Above' : 'Below'}</td><td>{Number.isFinite(meta.segment) ? meta.segment + 1 : 'Unavailable'}</td><td>{formatNumber(meta.t_start, 3)}</td><td>{formatNumber(meta.t_end, 3)}</td></tr>; })}</tbody></table></div>
             </Section>
+            </div>
+            ) : (
+              <ModelTwoDetails result={result} />
+            )}
           </section>
         )}
       </main>
